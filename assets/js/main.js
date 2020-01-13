@@ -1,18 +1,23 @@
+const body = document.querySelector("body");
+const nickname = localStorage.getItem("nickname");
 
-import { handleMessageNotifi } from "./chat";
+const LOOGED_OUT = "loggedOut";
+const LOOGED_IN = "loggedIn";
 
-// eslint-disable-next-line no-undef
-const socket = io("/");
+if (nickname === null){
+  body.className = LOOGED_OUT;
+}else{
+  body.className = LOOGED_IN;
+}
 
-// create new message event func
-const sendMessage = message => {
-  socket.emit("newMessage", { message });
-  console.log(`Me : ${message}`);
+const handleFormSubmit = e => {
+  e.preventDefault();
+  const input = loginForm.querySelector("input");
+  const { value } = input;
+  input.value = "";
+  localStorage.setItem(NICKNAME, value);
 };
 
-socket.on("messageNotifi", handleMessageNotifi);
-
-// Setting user nickname event func
-const setNickname = nickname => {
-  socket.emit("setNickname", { nickname });
-};
+if (loginForm) {
+  loginForm.addEventListener("submit", handleFormSubmit);
+}
