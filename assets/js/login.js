@@ -1,3 +1,5 @@
+import { initSocket } from "./socket";
+
 const body = document.querySelector("body");
 const loginForm = document.getElementById("jsLogin");
 
@@ -7,8 +9,9 @@ const LOOGED_OUT = "loggedOut";
 const LOOGED_IN = "loggedIn";
 
 const logIn = nickname => {
-    window.socket = io("/");
-    window.socket.emit(window.events.setNickname, { nickname });
+    const socket = io("/");
+    socket.emit(window.events.setNickname, { nickname });
+    initSocket(socket);
 };
 if (nickname === null){
     //닉네임잉 없으면 
