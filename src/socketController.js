@@ -1,5 +1,8 @@
 const socketController = socket => {
-
-}
-
-export default socketController;
+    socket.on("setNickname", ({ nickname }) => {
+      console.log(nickname);
+      socket.nickname = nickname;
+    });
+  };
+  
+  export default socketController;

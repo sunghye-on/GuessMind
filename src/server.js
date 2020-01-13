@@ -2,6 +2,9 @@ import { join } from "path";
 import express from "express";
 import socketIO from "socket.io";
 import logger from "morgan";
+import { Socket } from "dgram";
+import socketController from "./socketController";
+
 
 /* Setting */
 const PORT = 4000;
@@ -28,16 +31,17 @@ const server = app.listen(PORT, handleListening);
 const io = socketIO.listen(server);
 
 // create connection event
-io.on("connection", socket => {
-  /* chatting event handler */
-  socket.on("newMessage", ({ message }) => {
-    socket.broadcast.emit("messageNotifi", {
-      message,
-      nickname: socket.nickname || "Anon"
-    });
-  });
-  /* setting user nickname */
-  socket.on("setNickname", ({ nickname }) => {
-    socket.nickname = nickname;
-  });
-});
+io.on("connection", socket => socketController(Socket));
+
+
+  // /* chatting event handler */
+  // socket.on("newMessage", ({ message }) => {
+  //   socket.broadcast.emit("messageNotifi", {
+  //     message,
+  //     nickname: socket.nickname || "Anon"
+  //   });
+  // });
+  // /* setting user nickname */
+  // socket.on("setNickname", ({ nickname }) => {
+  //   socket.nickname = nickname;
+  // });
