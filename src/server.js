@@ -31,7 +31,7 @@ const server = app.listen(PORT, handleListening);
 const io = socketIO.listen(server);
 
 // create connection event
-io.on("connection", socket => socketController(socket));
+io.on("connection", socket => socketController(socket, io));
 
 
   // /* chatting event handler */
