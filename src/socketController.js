@@ -18,12 +18,17 @@ const socketController = (socket, io) => {
       inProgress = true; 
       leader = choseLeader();
       word = choseWord();
-      console.log("---------------word & leader is ", word, leader, sockets) ;
-      superBroadcast(events.gameStarted);
-      io.to(leader.id).emit(events.leaderNotif, { word });
+      console.log("---------------word & leader is ", word, leader.nickname, sockets) ;
       
+      setTimeout(() => {
+        superBroadcast(events.gameStarted);
+        io.to(leader.id).emit(events.leaderNotif, { word });
+      }, 2000);
     }
-  }
+  };
+  const endGame = () => {
+    inProgress = false;
+  };
   socket.on(events.setNickname, ({ nickname }) => {
     socket.nickname = nickname;
     sockets.push({ id: socket.id, points: 0, nickname: nickname });
@@ -36,6 +41,9 @@ const socketController = (socket, io) => {
 
   socket.on(events.disconnect, () => {
     sockets = sockets.filter(aSocket => aSocket.id !== socket.id);
+    if(sockets.length === 1 ){
+      endGame();
+    }
     broadcast(events.disconnected, { nickname: socket.nickname });
     sendPlayerUpdate();
   });

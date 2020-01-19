@@ -71,7 +71,7 @@ function handleModeClick() {
     mode.innerText = "Paint";
   }
 };
-const fill = (color = null) => {
+export const fill = (color = null) => {
   let currentColor = ctx.fillStyle;
   if (color !== null) {
     ctx.fillStyle = color;
@@ -101,7 +101,7 @@ if (mode) {
 }
 
 export const handleBeganPath = ({ x, y }) => beginPath(x, y);
-export const handleStrokedPath = ({ x, y }) => strokePath(x, y, ctx.strokeStyle);
+export const handleStrokedPath = ({ x, y, color }) => strokePath(x, y, color); 
 
 export const disableCanvas = () => {
   canvas.removeEventListener("mousemove", onMouseMove);
