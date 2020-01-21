@@ -1,4 +1,4 @@
-import { disableCanvas, hideControls, enableCanvas, showControls } from "./paint";
+import { disableCanvas, hideControls, enableCanvas, showControls, resetCanvas } from "./paint";
 
 const board = document.getElementById("jsPBoard");
 const wordNotifi = document.getElementById("jsword");
@@ -30,3 +30,10 @@ export const handleLeaderNotif = ({word}) => {
     showControls();
     wordNotifi.innerText = `문제 단어는 ${word}입니다. `;
 };
+
+export const handleGameEnded = () => {
+    setNotifi("게임 종료!!");
+    disableCanvas();
+    hideControls();
+    resetCanvas();
+}

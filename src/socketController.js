@@ -41,9 +41,15 @@ const socketController = (socket, io) => {
 
   socket.on(events.disconnect, () => {
     sockets = sockets.filter(aSocket => aSocket.id !== socket.id);
-    if(sockets.length === 1 ){
+    if(sockets.length === 1){
       endGame();
     }
+    else if (leader){
+      if(socket.id === leader.id){
+        endGame();
+      }
+    }
+    broadcast(events.gameEnded);
     broadcast(events.disconnected, { nickname: socket.nickname });
     sendPlayerUpdate();
   });
