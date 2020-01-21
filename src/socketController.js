@@ -19,13 +19,14 @@ const socketController = (socket, io) => {
       leader = choseLeader();
       word = choseWord();
       console.log("---------------word & leader is ", word, leader.nickname, sockets) ;
-      
+      superBroadcast(events.gameStarting);
       setTimeout(() => {
         superBroadcast(events.gameStarted);
         io.to(leader.id).emit(events.leaderNotif, { word });
-      }, 2000);
+      }, 5000);
     }
   };
+
   const endGame = () => {
     inProgress = false;
   };
@@ -38,7 +39,7 @@ const socketController = (socket, io) => {
       startGame();
     }
   });
-
+// 한사람만 남거나 리더가 퇴장시에 게임이 종료된다.
   socket.on(events.disconnect, () => {
     sockets = sockets.filter(aSocket => aSocket.id !== socket.id);
     if(sockets.length === 1){
