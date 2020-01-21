@@ -6,7 +6,7 @@ let sockets = [];
 let inProgress = false;
 let word = null;
 let leader = null;
-
+let timer = null;
 const choseLeader = () => sockets[Math.round(Math.random() * sockets.length)];
 
 const socketController = (socket, io) => {
@@ -15,20 +15,28 @@ const socketController = (socket, io) => {
   const sendPlayerUpdate = () =>
     superBroadcast(events.playerUpdate, { sockets });
   const startGame = () => {
-    if(inProgress === false){
-      inProgress = true; 
-      leader = choseLeader();
-      word = choseWord();
-      console.log("---------------word & leader is ", word, leader.nickname, sockets) ;
-      superBroadcast(events.gameStarting);
-      setTimeout(() => {
-        superBroadcast(events.gameStarted);
-        io.to(leader.id).emit(events.leaderNotif, { word });
-      }, 5000);
+    if (sockets.length > 1){
+      if(inProgress === false){
+        inProgress = true; 
+        leader = choseLeader();
+        word = choseWord();
+        console.log("---------------word & leader is ", word, leader.nickname, sockets) ;
+        superBroadcast(events.gameStarting);
+        setTimeout(() => {
+          superBroadcast(events.gameStarted);
+          io.to(leader.id).emit(events.leaderNotif, { word });
+          timer = setTimeout(endGame , 60000);
+        }, 5000);
+      }
     }
   };
   const endGame = () => {
     inProgress = false;
+    superBroadcast(events.gameEnded);
+    if(timer !== null){
+      clearTimeout(timer);
+    }
+    setTimeout(() => startGame(), 3000);
   };
   // 니꼴 : map은 가공된 배열을 반환한다.
   //        map에서는 return이 필수다. 
@@ -42,7 +50,7 @@ const socketController = (socket, io) => {
     });
     sendPlayerUpdate();
     endGame();
-    superBroadcast(events.gameEnded);
+    clearTimeout(timer);
   }
 
   socket.on(events.setNickname, ({ nickname }) => {
@@ -50,9 +58,7 @@ const socketController = (socket, io) => {
     sockets.push({ id: socket.id, points: 0, nickname: nickname });
     broadcast(events.newUser, { nickname });
     sendPlayerUpdate();
-    if (sockets.length === 2){
-      startGame();
-    }
+    startGame();
   });
 // 한사람만 남거나 리더가 퇴장시에 게임이 종료된다.
   socket.on(events.disconnect, () => {
