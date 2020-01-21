@@ -1,4 +1,5 @@
 import { disableCanvas, hideControls, enableCanvas, showControls, resetCanvas } from "./paint";
+import { disableChat, enableChat } from "./chat";
 
 const board = document.getElementById("jsPBoard");
 const wordNotifi = document.getElementById("jsword");
@@ -24,10 +25,11 @@ export const handleGameStarted = () => {
     disableCanvas();
     hideControls();
 };
-// 문제 단어를 알림
+// 리더임을 알리면서 문제 단어를 알림
 export const handleLeaderNotif = ({word}) => {
     enableCanvas();
     showControls();
+    disableChat();
     wordNotifi.innerText = `문제 단어는 ${word}입니다. `;
 };
 // 게임 종료
@@ -36,6 +38,7 @@ export const handleGameEnded = () => {
     disableCanvas();
     hideControls();
     resetCanvas();
+    enableChat();
 }
 //게임시작전 알림
 export const handleGameStarting = () => setNotifi("게임이 곧 시작합니다!!");

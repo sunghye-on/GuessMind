@@ -1,6 +1,7 @@
 import events from "./events";
 import { setInterval } from "timers";
 import { choseWord } from "./words";  
+import { Socket } from "dgram";
 let sockets = [];
 let inProgress = false;
 let word = null;
@@ -26,10 +27,24 @@ const socketController = (socket, io) => {
       }, 5000);
     }
   };
-
   const endGame = () => {
     inProgress = false;
   };
+  // 니꼴 : map은 가공된 배열을 반환한다.
+  //        map에서는 return이 필수다. 
+  //        아래에서는 정답인 소켓만 점수를 올리고 나머지는 그냥 반환하겠지? 그 후 업데이트
+  const addPoints = id => {
+    sockets = sockets.map(socket => {
+      if (socket.id === id){
+        socket.points += 50;
+      }
+      return socket;
+    });
+    sendPlayerUpdate();
+    endGame();
+    superBroadcast(events.gameEnded);
+  }
+
   socket.on(events.setNickname, ({ nickname }) => {
     socket.nickname = nickname;
     sockets.push({ id: socket.id, points: 0, nickname: nickname });
@@ -50,14 +65,22 @@ const socketController = (socket, io) => {
         endGame();
       }
     }
-    broadcast(events.gameEnded);
+    // broadcast(events.gameEnded);
     broadcast(events.disconnected, { nickname: socket.nickname });
     sendPlayerUpdate();
   });
 
-  socket.on(events.sendMsg, ({ message }) =>
-    broadcast(events.newMsg, { message, nickname: socket.nickname })
-  );
+  socket.on(events.sendMsg, ({ message }) =>{
+    if (message === word){
+      superBroadcast(events.newMsg, {
+        message: `${socket.nickname}님이 정답(${word})을 맞췄습니다! +50점`,
+        nickname: "알림👉"
+      });
+      addPoints(socket.id);
+    } else {
+      broadcast(events.newMsg, { message, nickname: socket.nickname})
+    }
+  });
   socket.on(events.beginPath, ({ x, y }) =>
     broadcast(events.beganPath, { x, y })
   );
