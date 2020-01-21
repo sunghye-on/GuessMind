@@ -7,6 +7,7 @@ let inProgress = false;
 let word = null;
 let leader = null;
 let timer = null;
+let maxTime = 60000;
 const choseLeader = () => sockets[Math.round(Math.random() * sockets.length)];
 
 const socketController = (socket, io) => {
@@ -25,7 +26,9 @@ const socketController = (socket, io) => {
         setTimeout(() => {
           superBroadcast(events.gameStarted);
           io.to(leader.id).emit(events.leaderNotif, { word });
-          timer = setTimeout(endGame , 60000);
+          timer = setTimeout(endGame , maxTime);
+          //게임이 시작한 후(리더에게 단어를 알려준 뒤) 모두에게 타이머를 시작
+          superBroadcast(events.startTimer, { maxTime });
         }, 5000);
       }
     }
@@ -35,6 +38,7 @@ const socketController = (socket, io) => {
     superBroadcast(events.gameEnded);
     if(timer !== null){
       clearTimeout(timer);
+      superBroadcast(events.endedTimer);
     }
     setTimeout(() => startGame(), 3000);
   };
@@ -51,6 +55,7 @@ const socketController = (socket, io) => {
     sendPlayerUpdate();
     endGame();
     clearTimeout(timer);
+    // superBroadcast(events.endedTimer);
   }
 
   socket.on(events.setNickname, ({ nickname }) => {

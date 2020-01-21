@@ -16,6 +16,9 @@ const events = {
     leaderNotif: "leaderNotif",
     gameEnded: "gameEnded",
     gameStarting: "gameStarting",
+    //타이머 생성
+    startTimer: "startTimer",
+    endedTimer: "endedTimer"
   };
   
   export default events;
