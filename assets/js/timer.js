@@ -1,9 +1,9 @@
 const getTimer = document.getElementById("jsTimer");
 
-let time = null;
+let time;
 //제한시간을 받아서 찍어줌
 export const handleStartTimer = ({maxTime}) => {
-
+    getTimer.style.opacity = 1;
     const showTime = () => {
         time = setInterval(() => {
             if (maxTime === 0){
@@ -16,5 +16,8 @@ export const handleStartTimer = ({maxTime}) => {
     }
     showTime();
 }
-
-
+export const handleEndedTimer = () => {
+    getTimer.style.opacity = 0;
+    clearInterval(time);
+    getTimer.innerHTML = "";
+}

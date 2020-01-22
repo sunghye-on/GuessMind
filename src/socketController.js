@@ -26,7 +26,7 @@ const socketController = (socket, io) => {
         setTimeout(() => {
           superBroadcast(events.gameStarted);
           io.to(leader.id).emit(events.leaderNotif, { word });
-          timer = setTimeout(endGame , maxTime);
+          timer = setTimeout(endGame , maxTime+1000);
           //게임이 시작한 후(리더에게 단어를 알려준 뒤) 모두에게 타이머를 시작
           superBroadcast(events.startTimer, { maxTime });
         }, 5000);
@@ -55,7 +55,7 @@ const socketController = (socket, io) => {
     sendPlayerUpdate();
     endGame();
     clearTimeout(timer);
-    // superBroadcast(events.endedTimer);
+    superBroadcast(events.endedTimer);
   }
 
   socket.on(events.setNickname, ({ nickname }) => {
